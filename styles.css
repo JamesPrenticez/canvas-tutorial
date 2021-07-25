@@ -1,0 +1,10 @@
+body {
+    margin: 0;
+    background: Indigo;
+    color: white;
+}
+
+canvas{
+    background: white;
+    border: 1px solid gold;
+}
