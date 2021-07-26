@@ -4,6 +4,14 @@ body {
     color: white;
 }
 
+#container{
+    height:60vh;
+    width: 80vw;
+    background-color: red;
+    z-index: 2;
+}
+
+
 canvas{
     background: white;
     border: 1px solid gold;
