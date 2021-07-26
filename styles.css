@@ -4,8 +4,13 @@ body {
     color: white;
 }
 
+/* 4961 / 3508 = 1.4141961
+80 / 60 = 1.333 */
+
 #container{
-    height:60vh;
+    margin: 0 auto;
+    margin-top: 15vh;
+    height:70vh;
     width: 80vw;
     background-color: red;
     z-index: 2;

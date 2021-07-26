@@ -19,7 +19,7 @@ function restrainCanvasSize(){
 // ------------------------------------------------- Set Initial Width and Height for Canvas And Draw all objects
 window.onload = function() {
     restrainCanvasSize()
-    drawScaledContext()()
+    drawScaledContext()
     // Console.log
     console.log(canvas.width, canvas.height)
     console.log(window.innerWidth, window.innerHeight)
@@ -30,7 +30,7 @@ window.onload = function() {
 // ------------------------- Write a function to automatically resize canvas
 function resizeCanvas(){
     restrainCanvasSize()
-    drawScaledContext()()
+    drawScaledContext()
 }
 
 // -------------------------- Resize window dynamically with 'resize' event listener and resizeCanvas function
@@ -72,7 +72,6 @@ function drawBackground(scaledX, scaledY){
     ctx.restore()
 }
 
-
 //---------------------------------------------- Draw Crosshair on Context
 function drawCrosshair(scaledX, scaledY){
     // Get half way
@@ -105,3 +104,58 @@ function drawCrosshair(scaledX, scaledY){
     // Restore Scale
     ctx.restore()
 }
+
+//----------------------------------------------------- Define the cursor location
+let startPosition =  {x: 0, y: 0}
+let endPosition = {x: 0, y: 0}
+let isDrawing = false;
+
+function getCursorCoordinates (event) {
+    
+    const position = {
+        x: event.pageX,
+        y: event.pageY
+    };
+    
+    const offset = {
+        left: canvas.offsetLeft,
+        top: canvas.offsetTop
+    };
+    
+    let reference = canvas.offsetParent;
+    
+    while(reference){
+        offset.left += reference.offsetLeft;
+        offset.top += reference.offsetTop;
+        reference = reference.offsetParent;
+    }
+    
+    return { 
+        x: position.x - offset.left,
+        y: position.y - offset.top,
+    }; 
+    
+}
+    
+const mouseDownListener = (event) => {
+    if(isDrawing === false){
+        startPosition = getCursorCoordinates(event);
+        isDrawing = true;
+        console.log(startPosition)
+    } else {
+        endPosition = getCursorCoordinates(event);
+        isDrawing = false;
+        console.log(endPosition)
+    }
+    drawLine()
+}
+
+function drawLine(){
+    ctx.beginPath();
+    ctx.moveTo(startPosition.x, startPosition.y);
+    ctx.lineTo(endPosition.x, endPosition.y);
+    ctx.stroke();
+}
+
+//Event listeners
+canvas.addEventListener('mousedown', mouseDownListener)
