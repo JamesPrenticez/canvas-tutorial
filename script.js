@@ -4,8 +4,9 @@ let container = document.getElementById('container')
 
 // Define origional canvas size
 // 4961 x 3508 px
-let origionalX = 4961
-let origionalY = 3508
+let origionalX = 1588.006299213
+let origionalY = 1122.670866142
+
 canvas.width = origionalX
 canvas.height = origionalY
 
@@ -16,7 +17,7 @@ function restrainCanvasSize(){
     canvas.height = container.clientHeight
 }
 
-// ------------------------------------------------- Set Initial Width and Height for Canvas And Draw all objects
+// ------------------------------------------------- Deploy our restrained Canvas onto the page when it loads and then draw onto the context with prescaled objects
 window.onload = function() {
     restrainCanvasSize()
     drawScaledContext()
@@ -27,7 +28,7 @@ window.onload = function() {
     console.log(scaledX, scaledY)
 }
 
-// ------------------------- Write a function to automatically resize canvas
+// ------------------------- Automatically resize canvas
 function resizeCanvas(){
     restrainCanvasSize()
     drawScaledContext()
@@ -41,7 +42,7 @@ let ctx = canvas.getContext('2d')
 
 //------------------------------------------------ Draw Scaled Context 
 // We defined our width of 4961px to match a A3 page
-// 4961 - container.clientWidth = 3761
+// 4961 - container.clientWidth(say 1200px) = 3761
 // 3761 / 4961 = .75%
 // 1 -.75 = .25% to convert to how scale() works
 
@@ -58,6 +59,7 @@ function drawScaledContext(){
     // Draw stuff here and pass it the scaled x and y values
     drawBackground(scaledX, scaledY)
     drawCrosshair(scaledX, scaledY)
+    drawLineOnMouseDown(event, scaledX, scaledY)
 }
 
 // -------------------------------------------------- Define a new Image for the background
@@ -76,8 +78,8 @@ function drawBackground(scaledX, scaledY){
 function drawCrosshair(scaledX, scaledY){
     // Get half way
     // Test half of 4961 x 3508 px should be 2480.5 and 1754 
-    var x = 2480.5;
-    var y = 1754;
+    var x = origionalX / 2;
+    var y = origionalY / 2;
 
     // remove aliasing
     x = Math.floor(x) + 0.5;
@@ -89,12 +91,12 @@ function drawCrosshair(scaledX, scaledY){
     ctx.scale(scaledX, scaledY)
 
     // draw line 
-    ctx.moveTo(x, y - 400);
-    ctx.lineTo(x, y + 400);
+    ctx.moveTo(x, y - 50);
+    ctx.lineTo(x, y + 50);
 
     // draw line
-    ctx.moveTo(x - 200,  y);
-    ctx.lineTo(x + 200,  y);
+    ctx.moveTo(x - 50,  y);
+    ctx.lineTo(x + 50,  y);
 
     ctx.lineWidth = 10;
     ctx.strokeStyle = 'white';
@@ -111,7 +113,6 @@ let endPosition = {x: 0, y: 0}
 let isDrawing = false;
 
 function getCursorCoordinates (event) {
-    
     const position = {
         x: event.pageX,
         y: event.pageY
@@ -122,40 +123,40 @@ function getCursorCoordinates (event) {
         top: canvas.offsetTop
     };
     
-    let reference = canvas.offsetParent;
-    
-    while(reference){
-        offset.left += reference.offsetLeft;
-        offset.top += reference.offsetTop;
-        reference = reference.offsetParent;
-    }
-    
     return { 
         x: position.x - offset.left,
         y: position.y - offset.top,
     }; 
     
 }
-    
-const mouseDownListener = (event) => {
+
+//----------------------------------------------------- Draw a line from point a to point b with mousedown and isDrawing toggle
+const drawLineOnMouseDown = (event, scaledX, scaledY) => {
     if(isDrawing === false){
         startPosition = getCursorCoordinates(event);
         isDrawing = true;
+
+        ctx.save();
+        ctx.scale(scaledX, scaledY)
+
+        ctx.beginPath();
+        ctx.moveTo(startPosition.x, startPosition.y);
+        ctx.lineTo(endPosition.x, endPosition.y);
+        ctx.stroke();
+        
+        ctx.restore()
         console.log(startPosition)
     } else {
         endPosition = getCursorCoordinates(event);
         isDrawing = false;
         console.log(endPosition)
     }
-    drawLine()
-}
 
-function drawLine(){
-    ctx.beginPath();
-    ctx.moveTo(startPosition.x, startPosition.y);
-    ctx.lineTo(endPosition.x, endPosition.y);
-    ctx.stroke();
 }
 
 //Event listeners
-canvas.addEventListener('mousedown', mouseDownListener)
+canvas.addEventListener('mousedown', drawLineOnMouseDown)
+
+//We need to add a Database and we could use excel
+// Now that we have changed the origionalX we need to change the view wdiht ratio in the css
+
